@@ -26,6 +26,6 @@ let package = Package(
             dependencies: ["SCGatewayPackage"]),
         .binaryTarget(name: "SCGateway",
                       url: "https://gateway.smallcase.com/scdk_ios_xcode_12/2.2.0/SCGateway.xcframework.zip",
-                      checksum: nil),
+                      checksum: "ff1c962fe08ebc3ef8f86428c75a0c15e83e1d867397cb0a05d386f93c60abc7"),
     ]
 )
