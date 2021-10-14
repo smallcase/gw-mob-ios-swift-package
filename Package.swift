@@ -20,6 +20,6 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .binaryTarget(name: "SCGateway",
                       url: "https://gateway.smallcase.com/scdk_ios_xcode_12/2.8.0/SCGateway.xcframework.zip",
-                      checksum: "f81362ba64c0fc071b603e1f174a870bad1b2fe412f240ab4657c0984183b819"),
+                      checksum: "662d086ad152fa5bebf6a8d7cb037a5caa5be6d7ed082331be40b53b2d0987f3"),
     ]
 )
