@@ -19,7 +19,7 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .binaryTarget(name: "SCGateway",
-                      url: "https://gateway.smallcase.com/scdk_ios_xcode_12/3.1.0/SCGateway.xcframework.zip",
-                      checksum: "d18472b8882f2411f2f810971aa85da69e8e0dec8d9a07bd924319634aabe19a"),
+                      url: "https://gateway.smallcase.com/scdk_ios_xcode_12/3.1.11/SCGateway.xcframework.zip",
+                      checksum: "71a2f48908038d3f8391e6d1af077d2af1596fa8e389daf1773c35f3f549870a"),
     ]
 )
