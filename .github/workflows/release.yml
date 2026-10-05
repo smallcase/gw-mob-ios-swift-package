@@ -1,0 +1,60 @@
+# Publishes the SCGateway SPM release when a publish/main/<tag> PR merges. The PR is opened by
+# case-ci-release-app from gw-mob-ios spm-publish.yml, which also uploads the ZIP to a draft
+# release. The tag and channel come from the publish/<channel>/<tag> branch name and the base
+# branch. Self-contained: public repositories cannot call reusable workflows from private ones.
+name: Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.event.pull_request.merged && startsWith(github.event.pull_request.head.ref, 'publish/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Publish draft release at merge commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          NOTES: ${{ github.event.pull_request.body }}
+        run: |
+          tag=${HEAD_REF##*/} # publish/<channel>/<tag>
+          existing=$(git ls-remote origin "refs/tags/$tag" | cut -f1)
+          if [ -n "$existing" ]; then
+            # Rerun: fine if the tag already points here, never move it.
+            [ "$existing" = "$SHA" ] || { echo "$tag already points at $existing"; exit 1; }
+          else
+            # Notes come from the PR body as merged, so edits made during review are kept.
+            printf '%s\n' "$NOTES" >"$RUNNER_TEMP/notes.md"
+            gh release edit "$tag" --target "$SHA" --notes-file "$RUNNER_TEMP/notes.md" --draft=false
+          fi
+          git push origin --delete "$HEAD_REF" || true
+
+      - uses: actions/create-github-app-token@v2
+        id: app
+        with:
+          app-id: ${{ vars.CASE_CI_RELEASE_APP_ID }}
+          private-key: ${{ secrets.CASE_CI_RELEASE_APP_PRI_KEY }}
+          owner: smallcase
+          repositories: gw-mob-ios
+
+      - name: Notify gw-mob-ios
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          tag=${HEAD_REF##*/}
+          jq -n --arg tag "$tag" --arg channel "$BASE_REF" --arg repo "$GITHUB_REPOSITORY" \
+            '{event_type: "package-released", client_payload: {sdk_name: "SCGateway", version: $tag, channel: $channel, repo: $repo}}' |
+            gh api repos/smallcase/gw-mob-ios/dispatches --input -
