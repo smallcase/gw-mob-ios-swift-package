@@ -8,8 +8,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "SCGateway",
-            url: "https://github.com/smallcase/gw-mob-ios-swift-package/releases/download/7.3.0/SCGateway.xcframework.zip",
-            checksum: "923d648ce93b7b71c4718a5fdfd0799e499166d7f0330478a690d7a0feef9bbe"
+            url: "https://github.com/smallcase/gw-mob-ios-swift-package/releases/download/7.4.0/SCGateway.xcframework.zip",
+            checksum: "9f9725b74a2793ea036e60df0875b226adf761baf374319619d88daea61be98b"
         ),
     ]
 )
